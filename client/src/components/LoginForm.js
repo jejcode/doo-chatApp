@@ -1,13 +1,20 @@
 import React, {useContext} from "react";
 import NameContext from "../context/NameContext";
+import { getAllMessages } from "../services/message-service";
 
 const LoginForm = () => {
     const context = useContext(NameContext)
-    const {name, setName, setLoggedIn} = context
+    const {name, setName, setLoggedIn, setMessages} = context
 
     const submitHandler = (e) => {
         e.preventDefault()
-        setLoggedIn(true)
+        getAllMessages()
+            .then(allMessages => {
+                setMessages([allMessages, `${name} joined the chat.`])
+                setLoggedIn(true)
+            })
+            .catch(err => console.log(err))
+
     }
 
     return (

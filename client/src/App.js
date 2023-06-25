@@ -1,8 +1,6 @@
 import React, {useState} from 'react'
 import NameContext from './context/NameContext';
 import Header from './components/Header';
-
-// import io from 'socket.io-client'
 import Chat from './views/Chat'
 import LoginForm from './components/LoginForm';
 
