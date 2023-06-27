@@ -16,7 +16,7 @@ const server = app.listen(8000, () => console.log('Listening on port 8000'))
 // We must also include a configuration settings object to prevent CORS errors
 const io = socket(server, {
     cors: {
-        origin: 'http://192.168.0.53:3000',
+        origin: 'http://localhost:3000',
         methods: ['GET', 'POST'],
         allowedHeaders: ['*'],
         credentials: true,
