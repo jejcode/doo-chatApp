@@ -2,14 +2,13 @@ const express = require('express') // import express module
 const cors = require('cors')
 const app = express()  // make an instance of express
 const socket = require('socket.io')
-
 app.use(cors()) 
 app.use(express.json())  // allows JSON objects to be posted
 app.use(express.urlencoded({ extended: true }))
 
-// require('./config/mongoose.config')
-// require('./routes/player.routes')(app)
-
+require('./config/mongoose.config')
+require('./routes/message.routes')(app)
+const services = require('./services/message-service-server')
 const server = app.listen(8000, () => console.log('Listening on port 8000'))
 
 // to initialize the socket, we need to invoke a new instance
@@ -17,7 +16,7 @@ const server = app.listen(8000, () => console.log('Listening on port 8000'))
 // We must also include a configuration settings object to prevent CORS errors
 const io = socket(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: 'http://192.168.0.53:3000',
         methods: ['GET', 'POST'],
         allowedHeaders: ['*'],
         credentials: true,
@@ -25,10 +24,22 @@ const io = socket(server, {
 });
 
 io.on("connection", socket => {
-    // logs each client connection, which gets its own socket it
-    console.log('socket id:', socket.id)
-    console.log('Nice to meet you. (Shakes hand)')
+    //every time you want to listen to the client, use socket.on
+    socket.on('join_server', newUser => {
+        console.log('socket id:', socket.id)
+        console.log('new user:', newUser)
+        socket.broadcast.emit('new_user_joined_chat', newUser)
+        services.getAllMessages()
+            .then(allMessages => {
+                console.log(allMessages)
+                socket.emit('send_all_messages', allMessages)
+                
+            })
+        
+    })
 
-    // Other event listeners go here
-    socket.emit('Welcome', 'Welcome to Jumanji')
+    socket.on('client_sent_message', message => {
+        services.createMessage(message)
+        socket.broadcast.emit('incoming_message', message)
+    })
 })

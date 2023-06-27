@@ -1,20 +1,18 @@
+import React, {useEffect, useRef} from 'react'
 import ChatMessages from '../components/ChatMessages'
 import ChatForm from '../components/ChatForm'
-import io from 'socket.io-client'
 const Chat = () => {
-    const [socket] = useState(() => io(':8000'))
+    const endRef = useRef()
 
     useEffect(() => {
-        // All event listeners go in the useEffect
-        console.log('Is this running?')
-        socket.on('Welcome', data => console.log(data))
-
-        return () => socket.off('Welcome')
-    }, [socket])
+        endRef?.current?.scrollIntoView({ behavior: 'instant' })
+        console.log('rerendering')
+    })
     return (
         <>
             <ChatMessages />
             <ChatForm />
+            <div ref={endRef}></div>
 
         </>
     )

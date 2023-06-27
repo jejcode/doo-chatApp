@@ -43,5 +43,4 @@ module.exports = {
             .then(deleteConfirmation => res.json(deleteConfirmation))
             .catch(err => res.json(err))
     }
-    
 }

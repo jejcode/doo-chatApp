@@ -1,19 +1,18 @@
 import React, {useContext} from "react";
 import NameContext from "../context/NameContext";
-import { getAllMessages } from "../services/message-service";
 
 const LoginForm = () => {
     const context = useContext(NameContext)
-    const {name, setName, setLoggedIn, setMessages} = context
+    const {userName, setUserName, setLoggedIn, setMessages, socket} = context
 
     const submitHandler = (e) => {
         e.preventDefault()
-        getAllMessages()
-            .then(allMessages => {
-                setMessages([allMessages, `${name} joined the chat.`])
-                setLoggedIn(true)
-            })
-            .catch(err => console.log(err))
+        socket.emit('join_server', userName)
+        socket.on('send_all_messages', allMessages => {
+            setMessages([...allMessages, `You joined the chat`])
+            setLoggedIn(true)
+        })
+        
 
     }
 
@@ -25,7 +24,7 @@ const LoginForm = () => {
                     <div className="row p-4 justify-content-between align-items-end">
                         <div className="col">
                             <label className="form-label" htmlFor="chatName">I want to start chatting with the name:</label>
-                            <input className="form-control" type="text" name="chatName" id="chatName"  onChange={(e) => setName(e.target.value)} value={ name }/>
+                            <input className="form-control" type="text" name="chatName" id="chatName"  onChange={(e) => setUserName(e.target.value)} value={ userName }/>
                         </div>
                         <input className="col-auto btn btn-success ms-4 mt-2" type="submit" value="Start chatting" />
                         
